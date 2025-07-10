@@ -1,32 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Chat Login | GhostChat</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body class="login-body">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GhostChat</title>
 
-  <div class="login-container">
-    <h2>👻 Welcome to GhostChat</h2>
-    <form id="loginForm">
-      <input type="text" id="username" placeholder="Enter your username" required />
-      <button type="submit">Enter Chat</button>
-    </form>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+  <!-- Style -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Login Page -->
+  <div id="loginScreen" class="login-screen">
+    <h2>Enter Your Username</h2>
+    <input type="text" id="usernameInput" placeholder="e.g. Swarup" required>
+    <button onclick="enterChat()">Join Chat</button>
   </div>
 
-  <script>
-    const loginForm = document.getElementById('loginForm');
-    loginForm.addEventListener('submit', function (e) {
-      e.preventDefault();
-      const username = document.getElementById('username').value.trim();
-      if (username !== "") {
-        localStorage.setItem("username", username);
-        window.location.href = "chat.html";
-      }
-    });
-  </script>
+  <!-- Main Chat UI -->
+  <div id="chatScreen" class="chat-screen hidden">
+    <div class="sidebar">
+      <h3>👥 Online Users</h3>
+      <ul id="userList"></ul>
 
+      <h3># Group Rooms</h3>
+      <ul>
+        <li onclick="joinRoom('general')"># general</li>
+        <li onclick="joinRoom('fun')"># fun</li>
+        <li onclick="joinRoom('study')"># study</li>
+      </ul>
+    </div>
+
+    <div class="main-chat">
+      <div class="chat-header">
+        <span id="chatHeader">#general</span>
+        <span id="currentUser" class="current-user"></span>
+      </div>
+
+      <div class="chat-box" id="chatMessages"></div>
+
+      <div class="input-box">
+        <input type="text" id="messageInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter') sendMessage()">
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script -->
+  <script src="script.js"></script>
 </body>
 </html>
