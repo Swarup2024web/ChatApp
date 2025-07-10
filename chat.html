@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GhostChat</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="chat-body">
+
+  <div class="chat-app">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h2>GhostChat</h2>
+      <div class="user-info" id="currentUser"></div>
+      <h3>Group Rooms</h3>
+      <ul id="roomList">
+        <li onclick="joinRoom('general')">🌍 General</li>
+        <li onclick="joinRoom('fun')">🎉 Fun</li>
+        <li onclick="joinRoom('study')">📚 Study</li>
+      </ul>
+      <h3>Online Users</h3>
+      <ul id="userList"></ul>
+    </div>
+
+    <!-- Main Chat Area -->
+    <div class="chat-window">
+      <div class="chat-header" id="chatHeader">Select a room or user</div>
+      <div class="chat-messages" id="chatMessages"></div>
+      <div class="chat-input">
+        <input type="text" id="messageInput" placeholder="Type a message..." />
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
