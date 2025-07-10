@@ -1,40 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>GhostChat</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body class="chat-body">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GhostChat – Chat</title>
 
-  <div class="chat-app">
-    <!-- Sidebar -->
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="chat-container">
+
+    <!-- Sidebar: Online users + Rooms -->
     <div class="sidebar">
-      <h2>GhostChat</h2>
-      <div class="user-info" id="currentUser"></div>
-      <h3>Group Rooms</h3>
-      <ul id="roomList">
-        <li onclick="joinRoom('general')">🌍 General</li>
-        <li onclick="joinRoom('fun')">🎉 Fun</li>
-        <li onclick="joinRoom('study')">📚 Study</li>
-      </ul>
-      <h3>Online Users</h3>
-      <ul id="userList"></ul>
+      <div class="sidebar-header">
+        <h2>GhostChat</h2>
+        <div class="current-user" id="currentUser">You: </div>
+      </div>
+
+      <div class="section">
+        <h3>👤 Online Users</h3>
+        <ul id="userList" class="user-list"></ul>
+      </div>
+
+      <div class="section">
+        <h3># Rooms</h3>
+        <ul>
+          <li onclick="joinRoom('general')"># general</li>
+          <li onclick="joinRoom('fun')"># fun</li>
+          <li onclick="joinRoom('study')"># study</li>
+        </ul>
+      </div>
     </div>
 
-    <!-- Main Chat Area -->
-    <div class="chat-window">
-      <div class="chat-header" id="chatHeader">Select a room or user</div>
-      <div class="chat-messages" id="chatMessages"></div>
-      <div class="chat-input">
-        <input type="text" id="messageInput" placeholder="Type a message..." />
+    <!-- Chat Area -->
+    <div class="chat-area">
+      <div class="chat-header">
+        <span id="chatHeader">#general</span>
+      </div>
+
+      <div class="chat-box" id="chatMessages"></div>
+
+      <div class="input-box">
+        <input type="text" id="messageInput" placeholder="Type your message..." onkeydown="if(event.key === 'Enter') sendMessage()">
         <button onclick="sendMessage()">Send</button>
       </div>
     </div>
   </div>
 
-  <script src="/socket.io/socket.io.js"></script>
+  <!-- JavaScript -->
   <script src="script.js"></script>
 </body>
 </html>
