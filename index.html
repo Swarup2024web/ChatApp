@@ -1,176 +1,261 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>ChatBox</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Google Material Icons -->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
-</head>
-<body style="margin: 0; font-family: 'Roboto', sans-serif; background: #f3f3f3;">
-
-  <div id="chatWrapper" style="display: flex; flex-direction: column; height: 100vh;">
-
-    <!-- Header -->
-    <header style="background-color: #6200ea; color: white; padding: 16px; font-size: 20px; font-weight: bold; text-align: center; position: relative;">
-      ChatBox
-      <!-- Fullscreen Icon -->
-      <span onclick="toggleFullScreen()" class="material-icons" style="position: absolute; right: 16px; top: 16px; cursor: pointer;">
-        fullscreen
-      </span>
-    </header>
-
-    <div style="flex: 1; display: flex; flex-direction: row; overflow: hidden;">
-      
-      <!-- Sidebar -->
-      <aside style="width: 250px; background: white; border-right: 1px solid #ddd; display: flex; flex-direction: column;" id="sidebar">
-        <div style="display: flex;">
-          <button onclick="switchTab('group')" id="groupBtn" style="flex: 1; padding: 12px; background: #6200ea; color: white; border: none;">Group</button>
-          <button onclick="switchTab('private')" id="privateBtn" style="flex: 1; padding: 12px; background: #eee; color: #000; border: none;">Private</button>
-        </div>
-        <div id="userList" style="flex: 1; overflow-y: auto;"></div>
-      </aside>
-
-      <!-- Chat Area -->
-      <main style="flex: 1; display: flex; flex-direction: column;">
-        <div id="chatHeader" style="padding: 14px; background: #e8def8; font-weight: bold; font-size: 16px;">Group Chat</div>
-        
-        <!-- Chat messages -->
-        <div id="messages" style="flex: 1; padding: 16px; overflow-y: auto; background: #f9f9f9;"></div>
-
-        <!-- Typing Indicator -->
-        <div id="typingStatus" style="font-size: 13px; color: #666; padding-left: 18px; display: none;">User is typing...</div>
-
-        <!-- Message input -->
-        <div style="display: flex; padding: 12px; background: white; border-top: 1px solid #ccc;">
-          <input id="msgInput" type="text" placeholder="Type a message..." oninput="showTyping()" style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 14px;">
-          <button onclick="sendMessage()" style="margin-left: 8px; padding: 12px 20px; background: #6200ea; color: white; border: none; border-radius: 8px;">Send</button>
-        </div>
-      </main>
-
-    </div>
-  </div>
-
-  <!-- Mobile Styling -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Messenger Chat</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
   <style>
-    @media (max-width: 768px) {
-      #sidebar {
+    :root {
+      --primary: #1b74e4;
+      --surface: #f5f6f7;
+      --on-primary: white;
+      --on-surface: #1c1e21;
+      --border: #ccd0d5;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    body {
+      background: var(--surface);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .messenger {
+      display: flex;
+      width: 90%;
+      height: 90vh;
+      max-width: 1100px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      background: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .sidebar {
+      width: 30%;
+      background: #fff;
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+    }
+
+    .chatlist {
+      list-style: none;
+    }
+
+    .chatlist li {
+      padding: 15px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .chatlist li:hover {
+      background: #f0f2f5;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .online {
+      background: green;
+    }
+
+    .typing {
+      color: gray;
+      font-size: 12px;
+    }
+
+    .chatbox {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #f0f2f5;
+    }
+
+    .chat-header {
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: white;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .message {
+      max-width: 70%;
+      padding: 10px 15px;
+      border-radius: 20px;
+      background: #fff;
+      align-self: flex-start;
+      position: relative;
+    }
+
+    .message.sent {
+      background: var(--primary);
+      color: var(--on-primary);
+      align-self: flex-end;
+    }
+
+    .chat-input {
+      display: flex;
+      align-items: center;
+      padding: 10px 15px;
+      background: white;
+      border-top: 1px solid var(--border);
+    }
+
+    .chat-input input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 16px;
+      padding: 10px;
+      border-radius: 20px;
+      background: #e4e6eb;
+    }
+
+    .chat-input button {
+      background: transparent;
+      border: none;
+      margin-left: 10px;
+      cursor: pointer;
+      font-size: 24px;
+      color: var(--primary);
+    }
+
+    .toggle {
+      background: transparent;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--on-surface);
+    }
+
+    @media screen and (max-width: 768px) {
+      .messenger {
+        flex-direction: column;
+        height: 100vh;
+      }
+
+      .sidebar {
         width: 100%;
-        height: auto;
-        flex-direction: row;
-        overflow-x: auto;
-        border-right: none;
-        border-bottom: 1px solid #ddd;
+        height: 40%;
       }
-      #userList {
-        display: flex;
-        flex-direction: row;
-        overflow-x: auto;
-      }
-      #userList button {
-        min-width: 100px;
+
+      .chatbox {
+        height: 60%;
       }
     }
   </style>
+</head>
+<body>
+  <div class="messenger">
+    <div class="sidebar">
+      <ul class="chatlist">
+        <li onclick="openChat('Priya')">
+          <div class="user-info">
+            <div class="status-dot online"></div>
+            <span>Priya</span>
+          </div>
+          <span class="typing">Typing...</span>
+        </li>
+        <li onclick="openChat('Amit')">
+          <div class="user-info">
+            <div class="status-dot online"></div>
+            <span>Amit</span>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="chatbox" id="chatbox">
+      <div class="chat-header">
+        <span id="chat-user">Select a user</span>
+        <button class="toggle" onclick="toggleChat()"> 
+          <span class="material-icons">open_in_full</span>
+        </button>
+      </div>
+
+      <div class="chat-messages" id="messages">
+        <div class="message">Hi there!</div>
+        <div class="message sent">Hello! How are you?</div>
+      </div>
+
+      <div class="chat-input">
+        <input type="text" placeholder="Type a message..." oninput="showTyping(this.value)">
+        <button onclick="sendMessage()"><span class="material-icons">send</span></button>
+      </div>
+    </div>
+  </div>
 
   <script>
-    const users = [
-      { name: 'Alice', online: true },
-      { name: 'Bob', online: false },
-      { name: 'Charlie', online: true }
-    ];
-    let currentTab = 'group';
-    let currentUser = null;
-    let typingTimeout;
+    let currentUser = "";
 
-    function switchTab(tab) {
-      currentTab = tab;
-      currentUser = null;
-      document.getElementById('chatHeader').innerText = tab === 'group' ? 'Group Chat' : 'Select a User';
-      document.getElementById('messages').innerHTML = '';
-      document.getElementById('typingStatus').style.display = 'none';
-      renderUserList();
-
-      document.getElementById('groupBtn').style.background = tab === 'group' ? '#6200ea' : '#eee';
-      document.getElementById('groupBtn').style.color = tab === 'group' ? 'white' : '#000';
-      document.getElementById('privateBtn').style.background = tab === 'private' ? '#6200ea' : '#eee';
-      document.getElementById('privateBtn').style.color = tab === 'private' ? 'white' : '#000';
-    }
-
-    function renderUserList() {
-      const list = document.getElementById('userList');
-      list.innerHTML = '';
-
-      if (currentTab === 'private') {
-        users.forEach(user => {
-          const btn = document.createElement('button');
-          btn.innerHTML = `<span style="display: inline-flex; align-items: center;">
-            <span style="display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px; background:${user.online ? '#4caf50' : '#ccc'};"></span>
-            ${user.name}
-          </span>`;
-          btn.style = 'width: 100%; padding: 12px; border: none; background: white; border-bottom: 1px solid #eee; text-align: left; cursor: pointer;';
-          btn.onclick = () => openPrivateChat(user.name);
-          list.appendChild(btn);
-        });
-      }
-    }
-
-    function openPrivateChat(user) {
+    function openChat(user) {
       currentUser = user;
-      document.getElementById('chatHeader').innerText = 'Chat with ' + user;
-      document.getElementById('messages').innerHTML = '';
-      document.getElementById('typingStatus').style.display = 'none';
+      document.getElementById("chat-user").innerText = user;
+      document.getElementById("messages").innerHTML = `
+        <div class="message">Hello ${user}!</div>
+        <div class="message sent">Hi ${user}, this is your chat.</div>
+      `;
     }
 
     function sendMessage() {
-      const input = document.getElementById('msgInput');
-      const text = input.value.trim();
-      if (!text) return;
-
-      const msgBox = document.createElement('div');
-      msgBox.style = 'display: flex; justify-content: flex-end; margin-bottom: 10px;';
-      msgBox.innerHTML = `<div style="max-width: 70%; background: #6200ea; color: white; padding: 10px 14px; border-radius: 16px 16px 0 16px;">${text}</div>`;
-      document.getElementById('messages').appendChild(msgBox);
-      input.value = '';
-      document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
-
-      document.getElementById('typingStatus').style.display = 'none';
-
-      setTimeout(() => {
-        const reply = document.createElement('div');
-        reply.style = 'display: flex; justify-content: flex-start; margin-bottom: 10px;';
-        reply.innerHTML = `<div style="max-width: 70%; background: #eee; color: #000; padding: 10px 14px; border-radius: 16px 16px 16px 0;">Hi! I'm ${currentUser || 'a group member'}.</div>`;
-        document.getElementById('messages').appendChild(reply);
-        document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
-      }, 600);
+      const input = document.querySelector(".chat-input input");
+      const msg = input.value.trim();
+      if (msg === "") return;
+      const div = document.createElement("div");
+      div.className = "message sent";
+      div.innerText = msg;
+      document.getElementById("messages").appendChild(div);
+      input.value = "";
+      input.focus();
     }
 
-    function showTyping() {
-      document.getElementById('typingStatus').style.display = 'block';
-      clearTimeout(typingTimeout);
-      typingTimeout = setTimeout(() => {
-        document.getElementById('typingStatus').style.display = 'none';
-      }, 1500);
-    }
-
-    function toggleFullScreen() {
-      const wrapper = document.getElementById('chatWrapper');
-      const icon = document.querySelector('.material-icons');
-
-      if (!document.fullscreenElement) {
-        wrapper.requestFullscreen().then(() => {
-          icon.textContent = 'fullscreen_exit';
-        });
+    function showTyping(value) {
+      const typingEl = document.querySelector(".typing");
+      if (value.length > 0) {
+        typingEl.innerText = "Typing...";
       } else {
-        document.exitFullscreen().then(() => {
-          icon.textContent = 'fullscreen';
-        });
+        typingEl.innerText = "";
       }
     }
 
-    switchTab('group');
+    function toggleChat() {
+      const box = document.getElementById("chatbox");
+      box.style.display = box.style.display === "none" ? "flex" : "none";
+    }
   </script>
-
 </body>
-  </html>
+</html>
