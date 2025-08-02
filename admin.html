@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; font-family: 'Roboto', sans-serif; background: #f2f2f2;">
+
+  <div style="display: flex; flex-direction: column; min-height: 100vh;">
+
+    <!-- Header -->
+    <header style="background-color: #6200ea; color: white; padding: 16px; font-size: 20px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); text-align: center;">
+      Admin Dashboard
+    </header>
+
+    <!-- Main Content -->
+    <main style="flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 24px;">
+
+      <!-- User Management -->
+      <section style="background: white; border-radius: 12px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.1);">
+        <h3 style="margin-top: 0; color: #333;">User Management</h3>
+        <div id="userList" style="display: flex; flex-direction: column; gap: 10px;"></div>
+      </section>
+
+      <!-- Group Management -->
+      <section style="background: white; border-radius: 12px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.1);">
+        <h3 style="margin-top: 0; color: #333;">Group Management</h3>
+        <div id="groupList" style="display: flex; flex-direction: column; gap: 10px;"></div>
+        <div style="margin-top: 16px;">
+          <input id="newGroup" type="text" placeholder="New group name" style="padding: 10px; width: 70%; border: 1px solid #ccc; border-radius: 8px;">
+          <button onclick="addGroup()" style="padding: 10px 16px; background: #6200ea; color: white; border: none; border-radius: 8px; margin-left: 8px;">Add</button>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- JS Data & Logic -->
+  <script>
+    const users = [
+      { name: 'Alice', banned: false },
+      { name: 'Bob', banned: true },
+      { name: 'Charlie', banned: false }
+    ];
+
+    const groups = ['Math Club', 'Science Lovers'];
+
+    function renderUsers() {
+      const container = document.getElementById('userList');
+      container.innerHTML = '';
+
+      users.forEach((user, index) => {
+        const card = document.createElement('div');
+        card.style = 'display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; background: #fafafa;';
+        card.innerHTML = `
+          <div>
+            <input type="text" value="${user.name}" onchange="updateUserName(${index}, this.value)" style="border: none; background: transparent; font-size: 16px; width: 120px;" />
+            <span style="font-size: 12px; color: ${user.banned ? 'red' : 'green'};">(${user.banned ? 'Banned' : 'Active'})</span>
+          </div>
+          <div>
+            <button onclick="toggleBan(${index})" style="margin-right: 8px; padding: 6px 12px; border: none; border-radius: 6px; background: ${user.banned ? '#4caf50' : '#f44336'}; color: white;">
+              ${user.banned ? 'Unban' : 'Ban'}
+            </button>
+            <button onclick="deleteUser(${index})" style="padding: 6px 12px; border: none; border-radius: 6px; background: #999; color: white;">Delete</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderGroups() {
+      const container = document.getElementById('groupList');
+      container.innerHTML = '';
+
+      groups.forEach((group, index) => {
+        const row = document.createElement('div');
+        row.style = 'display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1px solid #ddd; border-radius: 8px; background: #fefefe;';
+        row.innerHTML = `
+          <input value="${group}" onchange="editGroup(${index}, this.value)" style="flex: 1; border: none; font-size: 16px; background: transparent;" />
+          <button onclick="deleteGroup(${index})" style="margin-left: 10px; background: #e53935; color: white; border: none; padding: 6px 12px; border-radius: 6px;">Delete</button>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function updateUserName(index, newName) {
+      users[index].name = newName;
+      renderUsers();
+    }
+
+    function deleteUser(index) {
+      if (confirm("Delete this user?")) {
+        users.splice(index, 1);
+        renderUsers();
+      }
+    }
+
+    function toggleBan(index) {
+      users[index].banned = !users[index].banned;
+      renderUsers();
+    }
+
+    function addGroup() {
+      const input = document.getElementById('newGroup');
+      const name = input.value.trim();
+      if (name !== '') {
+        groups.push(name);
+        input.value = '';
+        renderGroups();
+      }
+    }
+
+    function editGroup(index, newName) {
+      groups[index] = newName;
+    }
+
+    function deleteGroup(index) {
+      if (confirm("Delete this group?")) {
+        groups.splice(index, 1);
+        renderGroups();
+      }
+    }
+
+    // Init
+    renderUsers();
+    renderGroups();
+  </script>
+
+</body>
+</html>
