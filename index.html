@@ -3,80 +3,77 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Messenger Chat</title>
+  <title>Messenger UI</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Roboto', sans-serif;
-    }
-
     body {
-      background: #f1f1f1;
-      display: flex;
-      height: 100vh;
-      overflow: hidden;
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: #f5f5f5;
     }
 
-    /* Sidebar */
-    .sidebar {
-      width: 300px;
-      background: #fff;
-      border-right: 1px solid #ddd;
-      transition: transform 0.3s ease;
-      z-index: 10;
-    }
-
-    .sidebar.hidden {
-      transform: translateX(-100%);
-    }
-
-    .sidebar-header {
-      background: #6200ea;
+    header {
+      background: #1976d2;
       color: white;
-      padding: 16px;
-      font-size: 20px;
+      padding: 10px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
     }
 
-    .chat-list {
-      list-style: none;
-      padding: 0;
-      overflow-y: auto;
-      max-height: calc(100vh - 64px);
-    }
-
-    .chat-list li {
-      padding: 12px 16px;
-      border-bottom: 1px solid #eee;
+    header .material-icons {
       cursor: pointer;
     }
 
-    .chat-list li:hover {
-      background: #f0f0f0;
+    #container {
+      display: flex;
+      height: calc(100vh - 56px);
     }
 
-    /* Chat Area */
-    .chat-area {
+    #sidebar {
+      width: 280px;
+      background: white;
+      border-right: 1px solid #ccc;
+      overflow-y: auto;
+      transition: transform 0.3s ease-in-out;
+    }
+
+    #sidebar.hide {
+      transform: translateX(-100%);
+    }
+
+    #chatArea {
       flex: 1;
       display: flex;
       flex-direction: column;
-      background: #e5ddd5;
-      position: relative;
+      background: #e3f2fd;
     }
 
-    .chat-header {
-      background: #6200ea;
-      color: white;
-      padding: 16px;
+    .chat-list {
+      padding: 10px;
+    }
+
+    .chat-user {
+      padding: 12px;
+      cursor: pointer;
+      border-bottom: 1px solid #eee;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      transition: background 0.2s ease;
+    }
+
+    .chat-user:hover {
+      background: #f0f0f0;
+    }
+
+    .chat-user .avatar {
+      width: 40px;
+      height: 40px;
+      background: #ccc;
+      border-radius: 50%;
+      margin-right: 10px;
     }
 
     .messages {
@@ -87,172 +84,143 @@
       flex-direction: column;
     }
 
-    .message {
+    .msg {
       max-width: 60%;
+      margin-bottom: 10px;
       padding: 10px 14px;
-      margin: 6px 0;
-      border-radius: 20px;
-      font-size: 15px;
-      color: white;
-      position: relative;
-      animation: fadeIn 0.2s ease-in;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.4;
+      word-wrap: break-word;
     }
 
-    .sent {
+    .from-user {
       align-self: flex-end;
-      background: linear-gradient(135deg, #0084ff, #0052cc);
+      background: linear-gradient(135deg, #4e8df5, #1976d2);
+      color: white;
       border-bottom-right-radius: 0;
     }
 
-    .received {
+    .from-friend {
       align-self: flex-start;
-      background: linear-gradient(135deg, #e91e63, #c2185b);
+      background: #ffffff;
+      color: #333;
       border-bottom-left-radius: 0;
     }
 
-    @keyframes fadeIn {
-      from {opacity: 0; transform: translateY(10px);}
-      to {opacity: 1; transform: translateY(0);}
-    }
-
-    .typing-status {
-      padding: 8px 16px;
-      font-size: 13px;
-      color: #666;
-      font-style: italic;
-    }
-
-    .chat-input {
+    .input-area {
+      padding: 12px;
+      background: white;
       display: flex;
       border-top: 1px solid #ccc;
-      background: white;
-      padding: 10px;
     }
 
-    .chat-input input {
+    .input-area input {
       flex: 1;
-      border: none;
+      padding: 10px 12px;
+      border: 1px solid #ccc;
+      border-radius: 24px;
+      font-size: 14px;
       outline: none;
-      padding: 10px;
-      border-radius: 25px;
-      background: #f1f1f1;
     }
 
-    .chat-input button {
-      background: #6200ea;
-      color: white;
+    .input-area button {
+      background: #1976d2;
       border: none;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 24px;
       margin-left: 10px;
       cursor: pointer;
+      transition: background 0.2s ease;
     }
 
-    /* Toggle Button */
-    .toggle-sidebar {
-      position: absolute;
-      top: 16px;
-      left: 16px;
-      z-index: 20;
-      background: #6200ea;
-      border: none;
-      color: white;
-      padding: 8px;
-      border-radius: 50%;
-      cursor: pointer;
+    .input-area button:hover {
+      background: #0d47a1;
     }
 
     @media (max-width: 768px) {
-      .sidebar {
+      #sidebar {
         position: absolute;
-        height: 100vh;
-        z-index: 20;
+        height: 100%;
+        z-index: 10;
+        background: white;
+        border-right: 1px solid #ccc;
       }
     }
   </style>
 </head>
 <body>
+  <header>
+    <span class="material-icons" onclick="toggleSidebar()">menu</span>
+    <h3 style="margin: 0;">Messenger</h3>
+    <span></span>
+  </header>
 
-  <!-- Sidebar -->
-  <div class="sidebar hidden" id="sidebar">
-    <div class="sidebar-header">
-      Chats
-      <span class="material-icons" style="cursor:pointer" onclick="toggleSidebar()">close</span>
-    </div>
-    <ul class="chat-list">
-      <li onclick="selectChat('Alice')">Alice</li>
-      <li onclick="selectChat('Bob')">Bob</li>
-      <li onclick="selectChat('Group: Study')">Group: Study</li>
-    </ul>
-  </div>
-
-  <!-- Main Chat -->
-  <div class="chat-area">
-    <button class="toggle-sidebar" onclick="toggleSidebar()">
-      <span class="material-icons">menu</span>
-    </button>
-
-    <div class="chat-header" id="chatHeader">
-      Messenger Chat
-      <span class="material-icons">account_circle</span>
-    </div>
-
-    <div class="messages" id="messages">
-      <div class="message received">Hi! How are you?</div>
-      <div class="message sent">I'm fine. You?</div>
-      <div class="message received">Doing great! What's up?</div>
+  <div id="container">
+    <div id="sidebar" class="hide">
+      <div class="chat-list">
+        <div class="chat-user" onclick="selectUser('John')">
+          <div class="avatar"></div>
+          <div>John</div>
+        </div>
+        <div class="chat-user" onclick="selectUser('Emily')">
+          <div class="avatar"></div>
+          <div>Emily</div>
+        </div>
+        <div class="chat-user" onclick="selectUser('Ava')">
+          <div class="avatar"></div>
+          <div>Ava</div>
+        </div>
+      </div>
     </div>
 
-    <div class="typing-status" id="typingStatus">Someone is typing...</div>
-
-    <div class="chat-input">
-      <input type="text" id="msgInput" placeholder="Type a message..." oninput="showTyping()"/>
-      <button onclick="sendMessage()"><span class="material-icons">send</span></button>
+    <div id="chatArea">
+      <div class="messages" id="messages">
+        <div class="msg from-friend">Hey! How are you?</div>
+        <div class="msg from-user">I'm good, what about you?</div>
+        <div class="msg from-friend">Pretty great!</div>
+      </div>
+      <div class="input-area">
+        <input type="text" placeholder="Type a message..." id="messageInput" />
+        <button onclick="sendMessage()">Send</button>
+      </div>
     </div>
   </div>
 
   <script>
-    const sidebar = document.getElementById('sidebar');
-    const messages = document.getElementById('messages');
-    const typingStatus = document.getElementById('typingStatus');
-    const msgInput = document.getElementById('msgInput');
-    const chatHeader = document.getElementById('chatHeader');
-
     function toggleSidebar() {
-      sidebar.classList.toggle('hidden');
-    }
-
-    function selectChat(name) {
-      chatHeader.innerText = name;
-      toggleSidebar();
-      messages.innerHTML = `
-        <div class="message received">Hello from ${name}!</div>
-        <div class="message sent">Hey ${name}!</div>
-      `;
+      document.getElementById("sidebar").classList.toggle("hide");
     }
 
     function sendMessage() {
-      const msg = msgInput.value.trim();
-      if (msg === '') return;
-      const div = document.createElement('div');
-      div.className = 'message sent';
-      div.innerText = msg;
-      messages.appendChild(div);
-      msgInput.value = '';
-      messages.scrollTop = messages.scrollHeight;
-      typingStatus.innerText = '';
+      const input = document.getElementById("messageInput");
+      const text = input.value.trim();
+      if (text) {
+        const msgDiv = document.createElement("div");
+        msgDiv.className = "msg from-user";
+        msgDiv.textContent = text;
+        document.getElementById("messages").appendChild(msgDiv);
+        input.value = "";
+        scrollToBottom();
+      }
     }
 
-    let typingTimeout;
-    function showTyping() {
-      typingStatus.innerText = 'You are typing...';
-      clearTimeout(typingTimeout);
-      typingTimeout = setTimeout(() => {
-        typingStatus.innerText = '';
-      }, 1500);
+    function selectUser(name) {
+      document.getElementById("sidebar").classList.add("hide");
+      const messages = document.getElementById("messages");
+      messages.innerHTML = `
+        <div class="msg from-friend">Hello, I'm ${name}</div>
+        <div class="msg from-user">Hi ${name}, nice to chat!</div>
+      `;
     }
+
+    function scrollToBottom() {
+      const msgArea = document.getElementById("messages");
+      msgArea.scrollTop = msgArea.scrollHeight;
+    }
+
+    scrollToBottom();
   </script>
-
 </body>
-  </html>
+</html>
