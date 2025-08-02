@@ -1,218 +1,258 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Messenger Chat</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
   <style>
     * {
+      margin: 0;
+      padding: 0;
       box-sizing: border-box;
       font-family: 'Roboto', sans-serif;
     }
+
     body {
-      margin: 0;
-      background: #f0f2f5;
-    }
-    .container {
+      background: #f1f1f1;
       display: flex;
       height: 100vh;
+      overflow: hidden;
     }
+
+    /* Sidebar */
     .sidebar {
-      width: 280px;
-      background-color: #ffffff;
-      border-right: 1px solid #ccc;
+      width: 300px;
+      background: #fff;
+      border-right: 1px solid #ddd;
       transition: transform 0.3s ease;
-      overflow-y: auto;
+      z-index: 10;
     }
+
     .sidebar.hidden {
       transform: translateX(-100%);
     }
-    .user {
-      padding: 10px;
-      border-bottom: 1px solid #eee;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      cursor: pointer;
-    }
-    .user img {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-    }
-    .online-dot {
-      width: 10px;
-      height: 10px;
-      background-color: #00c853;
-      border-radius: 50%;
-      margin-left: auto;
-    }
-    .chat-section {
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-    }
-    .chat-header {
-      padding: 15px;
-      background-color: #ffffff;
-      border-bottom: 1px solid #ccc;
+
+    .sidebar-header {
+      background: #6200ea;
+      color: white;
+      padding: 16px;
+      font-size: 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
-    .chat-header .material-icons {
+
+    .chat-list {
+      list-style: none;
+      padding: 0;
+      overflow-y: auto;
+      max-height: calc(100vh - 64px);
+    }
+
+    .chat-list li {
+      padding: 12px 16px;
+      border-bottom: 1px solid #eee;
       cursor: pointer;
     }
-    .chat-messages {
-      flex-grow: 1;
-      padding: 15px;
-      overflow-y: auto;
-      background-color: #e9ebee;
+
+    .chat-list li:hover {
+      background: #f0f0f0;
     }
-    .message {
-      margin-bottom: 10px;
-      padding: 10px;
-      border-radius: 8px;
-      max-width: 70%;
+
+    /* Chat Area */
+    .chat-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #e5ddd5;
       position: relative;
     }
-    .message.sent {
-      background-color: #d0f8ce;
+
+    .chat-header {
+      background: #6200ea;
+      color: white;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .messages {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .message {
+      max-width: 60%;
+      padding: 10px 14px;
+      margin: 6px 0;
+      border-radius: 20px;
+      font-size: 15px;
+      color: white;
+      position: relative;
+      animation: fadeIn 0.2s ease-in;
+    }
+
+    .sent {
       align-self: flex-end;
+      background: linear-gradient(135deg, #0084ff, #0052cc);
+      border-bottom-right-radius: 0;
     }
-    .message.received {
-      background-color: #ffffff;
+
+    .received {
       align-self: flex-start;
+      background: linear-gradient(135deg, #e91e63, #c2185b);
+      border-bottom-left-radius: 0;
     }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(10px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    .typing-status {
+      padding: 8px 16px;
+      font-size: 13px;
+      color: #666;
+      font-style: italic;
+    }
+
     .chat-input {
       display: flex;
-      padding: 10px;
-      background-color: #ffffff;
       border-top: 1px solid #ccc;
-    }
-    .chat-input input {
-      flex-grow: 1;
+      background: white;
       padding: 10px;
-      border-radius: 20px;
-      border: 1px solid #ccc;
-      outline: none;
     }
-    .chat-input button {
+
+    .chat-input input {
+      flex: 1;
       border: none;
-      background: #2196f3;
-      color: #fff;
-      padding: 0 20px;
+      outline: none;
+      padding: 10px;
+      border-radius: 25px;
+      background: #f1f1f1;
+    }
+
+    .chat-input button {
+      background: #6200ea;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
       margin-left: 10px;
-      border-radius: 20px;
       cursor: pointer;
     }
+
+    /* Toggle Button */
     .toggle-sidebar {
-      display: none;
-      font-size: 28px;
-      margin-right: 10px;
-    }
-    .typing {
-      font-size: 12px;
-      color: gray;
-      padding-left: 15px;
-      margin-top: -10px;
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      z-index: 20;
+      background: #6200ea;
+      border: none;
+      color: white;
+      padding: 8px;
+      border-radius: 50%;
+      cursor: pointer;
     }
 
     @media (max-width: 768px) {
       .sidebar {
         position: absolute;
-        z-index: 1000;
-        height: 100%;
-      }
-      .toggle-sidebar {
-        display: block;
+        height: 100vh;
+        z-index: 20;
       }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Sidebar -->
-    <div id="sidebar" class="sidebar">
-      <div class="user">
-        <img src="https://via.placeholder.com/40" alt="User 1">
-        <span>John Doe</span>
-        <div class="online-dot"></div>
-      </div>
-      <div class="user">
-        <img src="https://via.placeholder.com/40" alt="User 2">
-        <span>Jane Smith</span>
-        <div class="online-dot"></div>
-      </div>
-      <!-- Add more users/groups here -->
+
+  <!-- Sidebar -->
+  <div class="sidebar hidden" id="sidebar">
+    <div class="sidebar-header">
+      Chats
+      <span class="material-icons" style="cursor:pointer" onclick="toggleSidebar()">close</span>
+    </div>
+    <ul class="chat-list">
+      <li onclick="selectChat('Alice')">Alice</li>
+      <li onclick="selectChat('Bob')">Bob</li>
+      <li onclick="selectChat('Group: Study')">Group: Study</li>
+    </ul>
+  </div>
+
+  <!-- Main Chat -->
+  <div class="chat-area">
+    <button class="toggle-sidebar" onclick="toggleSidebar()">
+      <span class="material-icons">menu</span>
+    </button>
+
+    <div class="chat-header" id="chatHeader">
+      Messenger Chat
+      <span class="material-icons">account_circle</span>
     </div>
 
-    <!-- Chat Section -->
-    <div class="chat-section">
-      <div class="chat-header">
-        <span>
-          <span class="material-icons toggle-sidebar" onclick="toggleSidebar()">menu</span>
-          Messenger
-        </span>
-        <span>
-          <span class="material-icons" onclick="toggleMaximize()">fullscreen</span>
-        </span>
-      </div>
+    <div class="messages" id="messages">
+      <div class="message received">Hi! How are you?</div>
+      <div class="message sent">I'm fine. You?</div>
+      <div class="message received">Doing great! What's up?</div>
+    </div>
 
-      <div class="typing" id="typing-status">Jane is typing...</div>
+    <div class="typing-status" id="typingStatus">Someone is typing...</div>
 
-      <div class="chat-messages" id="chat-box">
-        <div class="message received">Hi there!</div>
-        <div class="message sent">Hello! How are you?</div>
-        <!-- Add more messages dynamically -->
-      </div>
-
-      <div class="chat-input">
-        <input type="text" id="messageInput" placeholder="Type a message..." oninput="showTypingStatus()">
-        <button onclick="sendMessage()">Send</button>
-      </div>
+    <div class="chat-input">
+      <input type="text" id="msgInput" placeholder="Type a message..." oninput="showTyping()"/>
+      <button onclick="sendMessage()"><span class="material-icons">send</span></button>
     </div>
   </div>
 
   <script>
     const sidebar = document.getElementById('sidebar');
-    const chatBox = document.getElementById('chat-box');
-    const typingStatus = document.getElementById('typing-status');
+    const messages = document.getElementById('messages');
+    const typingStatus = document.getElementById('typingStatus');
+    const msgInput = document.getElementById('msgInput');
+    const chatHeader = document.getElementById('chatHeader');
 
     function toggleSidebar() {
       sidebar.classList.toggle('hidden');
     }
 
-    function toggleMaximize() {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();
-      } else {
-        document.exitFullscreen();
-      }
+    function selectChat(name) {
+      chatHeader.innerText = name;
+      toggleSidebar();
+      messages.innerHTML = `
+        <div class="message received">Hello from ${name}!</div>
+        <div class="message sent">Hey ${name}!</div>
+      `;
     }
 
     function sendMessage() {
-      const input = document.getElementById('messageInput');
-      if (input.value.trim() === "") return;
-      const msg = document.createElement('div');
-      msg.classList.add('message', 'sent');
-      msg.innerText = input.value;
-      chatBox.appendChild(msg);
-      input.value = '';
-      chatBox.scrollTop = chatBox.scrollHeight;
+      const msg = msgInput.value.trim();
+      if (msg === '') return;
+      const div = document.createElement('div');
+      div.className = 'message sent';
+      div.innerText = msg;
+      messages.appendChild(div);
+      msgInput.value = '';
+      messages.scrollTop = messages.scrollHeight;
+      typingStatus.innerText = '';
     }
 
     let typingTimeout;
-    function showTypingStatus() {
-      typingStatus.style.display = 'block';
+    function showTyping() {
+      typingStatus.innerText = 'You are typing...';
       clearTimeout(typingTimeout);
       typingTimeout = setTimeout(() => {
-        typingStatus.style.display = 'none';
-      }, 1000);
+        typingStatus.innerText = '';
+      }, 1500);
     }
   </script>
+
 </body>
-</html>
+  </html>
