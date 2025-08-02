@@ -15,7 +15,7 @@
     <!-- Header -->
     <header style="background-color: #6200ea; color: white; padding: 16px; font-size: 20px; font-weight: bold; text-align: center; position: relative;">
       ChatBox
-      <!-- Fullscreen toggle icon -->
+      <!-- Fullscreen Icon -->
       <span onclick="toggleFullScreen()" class="material-icons" style="position: absolute; right: 16px; top: 16px; cursor: pointer;">
         fullscreen
       </span>
@@ -39,9 +39,12 @@
         <!-- Chat messages -->
         <div id="messages" style="flex: 1; padding: 16px; overflow-y: auto; background: #f9f9f9;"></div>
 
+        <!-- Typing Indicator -->
+        <div id="typingStatus" style="font-size: 13px; color: #666; padding-left: 18px; display: none;">User is typing...</div>
+
         <!-- Message input -->
         <div style="display: flex; padding: 12px; background: white; border-top: 1px solid #ccc;">
-          <input id="msgInput" type="text" placeholder="Type a message..." style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 14px;">
+          <input id="msgInput" type="text" placeholder="Type a message..." oninput="showTyping()" style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 14px;">
           <button onclick="sendMessage()" style="margin-left: 8px; padding: 12px 20px; background: #6200ea; color: white; border: none; border-radius: 8px;">Send</button>
         </div>
       </main>
@@ -49,7 +52,7 @@
     </div>
   </div>
 
-  <!-- Responsive Sidebar for Small Screens -->
+  <!-- Mobile Styling -->
   <style>
     @media (max-width: 768px) {
       #sidebar {
@@ -71,17 +74,22 @@
     }
   </style>
 
-  <!-- JS Logic -->
   <script>
-    const users = ['Alice', 'Bob', 'Charlie'];
+    const users = [
+      { name: 'Alice', online: true },
+      { name: 'Bob', online: false },
+      { name: 'Charlie', online: true }
+    ];
     let currentTab = 'group';
     let currentUser = null;
+    let typingTimeout;
 
     function switchTab(tab) {
       currentTab = tab;
       currentUser = null;
       document.getElementById('chatHeader').innerText = tab === 'group' ? 'Group Chat' : 'Select a User';
       document.getElementById('messages').innerHTML = '';
+      document.getElementById('typingStatus').style.display = 'none';
       renderUserList();
 
       document.getElementById('groupBtn').style.background = tab === 'group' ? '#6200ea' : '#eee';
@@ -97,9 +105,12 @@
       if (currentTab === 'private') {
         users.forEach(user => {
           const btn = document.createElement('button');
-          btn.textContent = user;
+          btn.innerHTML = `<span style="display: inline-flex; align-items: center;">
+            <span style="display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px; background:${user.online ? '#4caf50' : '#ccc'};"></span>
+            ${user.name}
+          </span>`;
           btn.style = 'width: 100%; padding: 12px; border: none; background: white; border-bottom: 1px solid #eee; text-align: left; cursor: pointer;';
-          btn.onclick = () => openPrivateChat(user);
+          btn.onclick = () => openPrivateChat(user.name);
           list.appendChild(btn);
         });
       }
@@ -109,6 +120,7 @@
       currentUser = user;
       document.getElementById('chatHeader').innerText = 'Chat with ' + user;
       document.getElementById('messages').innerHTML = '';
+      document.getElementById('typingStatus').style.display = 'none';
     }
 
     function sendMessage() {
@@ -123,20 +135,29 @@
       input.value = '';
       document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
 
+      document.getElementById('typingStatus').style.display = 'none';
+
       setTimeout(() => {
         const reply = document.createElement('div');
         reply.style = 'display: flex; justify-content: flex-start; margin-bottom: 10px;';
-        reply.innerHTML = `<div style="max-width: 70%; background: #eee; color: #000; padding: 10px 14px; border-radius: 16px 16px 16px 0;">Hi! I'm ${currentUser || 'a member'}.</div>`;
+        reply.innerHTML = `<div style="max-width: 70%; background: #eee; color: #000; padding: 10px 14px; border-radius: 16px 16px 16px 0;">Hi! I'm ${currentUser || 'a group member'}.</div>`;
         document.getElementById('messages').appendChild(reply);
         document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
       }, 600);
     }
 
-    // Fullscreen toggle
+    function showTyping() {
+      document.getElementById('typingStatus').style.display = 'block';
+      clearTimeout(typingTimeout);
+      typingTimeout = setTimeout(() => {
+        document.getElementById('typingStatus').style.display = 'none';
+      }, 1500);
+    }
+
     function toggleFullScreen() {
       const wrapper = document.getElementById('chatWrapper');
       const icon = document.querySelector('.material-icons');
-      
+
       if (!document.fullscreenElement) {
         wrapper.requestFullscreen().then(() => {
           icon.textContent = 'fullscreen_exit';
@@ -148,9 +169,8 @@
       }
     }
 
-    // Init
     switchTab('group');
   </script>
 
 </body>
-</html>
+  </html>
