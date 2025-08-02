@@ -1,260 +1,217 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Messenger Chat</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
-    :root {
-      --primary: #1b74e4;
-      --surface: #f5f6f7;
-      --on-primary: white;
-      --on-surface: #1c1e21;
-      --border: #ccd0d5;
-    }
-
     * {
-      margin: 0;
-      padding: 0;
       box-sizing: border-box;
       font-family: 'Roboto', sans-serif;
     }
-
     body {
-      background: var(--surface);
+      margin: 0;
+      background: #f0f2f5;
+    }
+    .container {
       display: flex;
-      justify-content: center;
-      align-items: center;
       height: 100vh;
     }
-
-    .messenger {
-      display: flex;
-      width: 90%;
-      height: 90vh;
-      max-width: 1100px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-      background: white;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-
     .sidebar {
-      width: 30%;
-      background: #fff;
-      border-right: 1px solid var(--border);
+      width: 280px;
+      background-color: #ffffff;
+      border-right: 1px solid #ccc;
+      transition: transform 0.3s ease;
       overflow-y: auto;
     }
-
-    .chatlist {
-      list-style: none;
+    .sidebar.hidden {
+      transform: translateX(-100%);
     }
-
-    .chatlist li {
-      padding: 15px;
-      border-bottom: 1px solid var(--border);
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .chatlist li:hover {
-      background: #f0f2f5;
-    }
-
-    .user-info {
+    .user {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
       display: flex;
       align-items: center;
       gap: 10px;
+      cursor: pointer;
     }
-
-    .status-dot {
-      width: 10px;
-      height: 10px;
+    .user img {
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
     }
-
-    .online {
-      background: green;
+    .online-dot {
+      width: 10px;
+      height: 10px;
+      background-color: #00c853;
+      border-radius: 50%;
+      margin-left: auto;
     }
-
-    .typing {
-      color: gray;
-      font-size: 12px;
-    }
-
-    .chatbox {
-      flex: 1;
+    .chat-section {
+      flex-grow: 1;
       display: flex;
       flex-direction: column;
-      background: #f0f2f5;
-    }
-
-    .chat-header {
-      padding: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: white;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .chat-messages {
-      flex: 1;
-      padding: 15px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .message {
-      max-width: 70%;
-      padding: 10px 15px;
-      border-radius: 20px;
-      background: #fff;
-      align-self: flex-start;
       position: relative;
     }
-
-    .message.sent {
-      background: var(--primary);
-      color: var(--on-primary);
-      align-self: flex-end;
-    }
-
-    .chat-input {
+    .chat-header {
+      padding: 15px;
+      background-color: #ffffff;
+      border-bottom: 1px solid #ccc;
       display: flex;
       align-items: center;
-      padding: 10px 15px;
-      background: white;
-      border-top: 1px solid var(--border);
+      justify-content: space-between;
     }
-
+    .chat-header .material-icons {
+      cursor: pointer;
+    }
+    .chat-messages {
+      flex-grow: 1;
+      padding: 15px;
+      overflow-y: auto;
+      background-color: #e9ebee;
+    }
+    .message {
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      max-width: 70%;
+      position: relative;
+    }
+    .message.sent {
+      background-color: #d0f8ce;
+      align-self: flex-end;
+    }
+    .message.received {
+      background-color: #ffffff;
+      align-self: flex-start;
+    }
+    .chat-input {
+      display: flex;
+      padding: 10px;
+      background-color: #ffffff;
+      border-top: 1px solid #ccc;
+    }
     .chat-input input {
-      flex: 1;
-      border: none;
-      outline: none;
-      font-size: 16px;
+      flex-grow: 1;
       padding: 10px;
       border-radius: 20px;
-      background: #e4e6eb;
+      border: 1px solid #ccc;
+      outline: none;
     }
-
     .chat-input button {
-      background: transparent;
       border: none;
+      background: #2196f3;
+      color: #fff;
+      padding: 0 20px;
       margin-left: 10px;
+      border-radius: 20px;
       cursor: pointer;
-      font-size: 24px;
-      color: var(--primary);
+    }
+    .toggle-sidebar {
+      display: none;
+      font-size: 28px;
+      margin-right: 10px;
+    }
+    .typing {
+      font-size: 12px;
+      color: gray;
+      padding-left: 15px;
+      margin-top: -10px;
     }
 
-    .toggle {
-      background: transparent;
-      border: none;
-      font-size: 24px;
-      cursor: pointer;
-      color: var(--on-surface);
-    }
-
-    @media screen and (max-width: 768px) {
-      .messenger {
-        flex-direction: column;
-        height: 100vh;
-      }
-
+    @media (max-width: 768px) {
       .sidebar {
-        width: 100%;
-        height: 40%;
+        position: absolute;
+        z-index: 1000;
+        height: 100%;
       }
-
-      .chatbox {
-        height: 60%;
+      .toggle-sidebar {
+        display: block;
       }
     }
   </style>
 </head>
 <body>
-  <div class="messenger">
-    <div class="sidebar">
-      <ul class="chatlist">
-        <li onclick="openChat('Priya')">
-          <div class="user-info">
-            <div class="status-dot online"></div>
-            <span>Priya</span>
-          </div>
-          <span class="typing">Typing...</span>
-        </li>
-        <li onclick="openChat('Amit')">
-          <div class="user-info">
-            <div class="status-dot online"></div>
-            <span>Amit</span>
-          </div>
-        </li>
-      </ul>
+  <div class="container">
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar">
+      <div class="user">
+        <img src="https://via.placeholder.com/40" alt="User 1">
+        <span>John Doe</span>
+        <div class="online-dot"></div>
+      </div>
+      <div class="user">
+        <img src="https://via.placeholder.com/40" alt="User 2">
+        <span>Jane Smith</span>
+        <div class="online-dot"></div>
+      </div>
+      <!-- Add more users/groups here -->
     </div>
 
-    <div class="chatbox" id="chatbox">
+    <!-- Chat Section -->
+    <div class="chat-section">
       <div class="chat-header">
-        <span id="chat-user">Select a user</span>
-        <button class="toggle" onclick="toggleChat()"> 
-          <span class="material-icons">open_in_full</span>
-        </button>
+        <span>
+          <span class="material-icons toggle-sidebar" onclick="toggleSidebar()">menu</span>
+          Messenger
+        </span>
+        <span>
+          <span class="material-icons" onclick="toggleMaximize()">fullscreen</span>
+        </span>
       </div>
 
-      <div class="chat-messages" id="messages">
-        <div class="message">Hi there!</div>
+      <div class="typing" id="typing-status">Jane is typing...</div>
+
+      <div class="chat-messages" id="chat-box">
+        <div class="message received">Hi there!</div>
         <div class="message sent">Hello! How are you?</div>
+        <!-- Add more messages dynamically -->
       </div>
 
       <div class="chat-input">
-        <input type="text" placeholder="Type a message..." oninput="showTyping(this.value)">
-        <button onclick="sendMessage()"><span class="material-icons">send</span></button>
+        <input type="text" id="messageInput" placeholder="Type a message..." oninput="showTypingStatus()">
+        <button onclick="sendMessage()">Send</button>
       </div>
     </div>
   </div>
 
   <script>
-    let currentUser = "";
+    const sidebar = document.getElementById('sidebar');
+    const chatBox = document.getElementById('chat-box');
+    const typingStatus = document.getElementById('typing-status');
 
-    function openChat(user) {
-      currentUser = user;
-      document.getElementById("chat-user").innerText = user;
-      document.getElementById("messages").innerHTML = `
-        <div class="message">Hello ${user}!</div>
-        <div class="message sent">Hi ${user}, this is your chat.</div>
-      `;
+    function toggleSidebar() {
+      sidebar.classList.toggle('hidden');
     }
 
-    function sendMessage() {
-      const input = document.querySelector(".chat-input input");
-      const msg = input.value.trim();
-      if (msg === "") return;
-      const div = document.createElement("div");
-      div.className = "message sent";
-      div.innerText = msg;
-      document.getElementById("messages").appendChild(div);
-      input.value = "";
-      input.focus();
-    }
-
-    function showTyping(value) {
-      const typingEl = document.querySelector(".typing");
-      if (value.length > 0) {
-        typingEl.innerText = "Typing...";
+    function toggleMaximize() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
       } else {
-        typingEl.innerText = "";
+        document.exitFullscreen();
       }
     }
 
-    function toggleChat() {
-      const box = document.getElementById("chatbox");
-      box.style.display = box.style.display === "none" ? "flex" : "none";
+    function sendMessage() {
+      const input = document.getElementById('messageInput');
+      if (input.value.trim() === "") return;
+      const msg = document.createElement('div');
+      msg.classList.add('message', 'sent');
+      msg.innerText = input.value;
+      chatBox.appendChild(msg);
+      input.value = '';
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    let typingTimeout;
+    function showTypingStatus() {
+      typingStatus.style.display = 'block';
+      clearTimeout(typingTimeout);
+      typingTimeout = setTimeout(() => {
+        typingStatus.style.display = 'none';
+      }, 1000);
     }
   </script>
 </body>
